@@ -11,15 +11,15 @@ CREATE TABLE livros (
     titulo VARCHAR(255) NOT NULL,
     autor VARCHAR(255) NOT NULL,
     descricao TEXT,
-    usuario_id INTEGER REFERENCES Usuario(id)
+    usuario_id INTEGER REFERENCES usuarios(id)
 );
 
 CREATE TABLE trocas (
     id SERIAL PRIMARY KEY,
-    solicitante_id INTEGER REFERENCES Usuario(id),
-    receptor_id INTEGER REFERENCES Usuario(id),
-    livro_solicitado_id INTEGER REFERENCES Livro(id),
-    livro_oferecido_id INTEGER REFERENCES Livro(id),
+    solicitante_id INTEGER REFERENCES usuarios(id),
+    receptor_id INTEGER REFERENCES usuarios(id),
+    livro_solicitado_id INTEGER REFERENCES livros(id),
+    livro_oferecido_id INTEGER REFERENCES livros(id),
     data_solicitacao DATE NOT NULL,
     data_conclusao DATE,
     status VARCHAR(50) NOT NULL
@@ -27,9 +27,9 @@ CREATE TABLE trocas (
 
 CREATE TABLE avaliacoes (
     id SERIAL PRIMARY KEY,
-    troca_id INTEGER REFERENCES Troca(id),
-    avaliador_id INTEGER REFERENCES Usuario(id),
-    avaliado_id INTEGER REFERENCES Usuario(id),
+    troca_id INTEGER REFERENCES trocas(id),
+    avaliador_id INTEGER REFERENCES usuarios(id),
+    avaliado_id INTEGER REFERENCES usuarios(id),
     nota INTEGER NOT NULL,
     comentario TEXT,
     data_avaliacao DATE NOT NULL
@@ -37,16 +37,16 @@ CREATE TABLE avaliacoes (
 
 CREATE TABLE mensagens (
     id SERIAL PRIMARY KEY,
-    troca_id INTEGER REFERENCES Troca(id),
-    remetente_id INTEGER REFERENCES Usuario(id),
-    destinatario_id INTEGER REFERENCES Usuario(id),
+    troca_id INTEGER REFERENCES trocas(id),
+    remetente_id INTEGER REFERENCES usuarios(id),
+    destinatario_id INTEGER REFERENCES usuarios(id),
     conteudo TEXT NOT NULL,
     data_envio DATE NOT NULL
 );
 
 CREATE TABLE historico_trocas (
     id SERIAL PRIMARY KEY,
-    usuario_id INTEGER REFERENCES Usuario(id),
-    troca_id INTEGER REFERENCES Troca(id)
+    usuario_id INTEGER REFERENCES usuarios(id),
+    troca_id INTEGER REFERENCES trocas(id)
 );
 
