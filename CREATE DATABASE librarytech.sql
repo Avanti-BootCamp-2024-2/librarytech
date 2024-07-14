@@ -49,4 +49,3 @@ CREATE TABLE historico_trocas (
     usuario_id INTEGER REFERENCES usuarios(id),
     troca_id INTEGER REFERENCES trocas(id)
 );
-
