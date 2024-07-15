@@ -16,8 +16,32 @@ const usuarios = async (req, res) => {
     }
 }
 
+const criarUsuario= async (req, res) => {
+    const {nome, email, senha } = req.body
+
+    try {
+        const emailCadstrado = await prisma.usuario.findFirst({where: {email}});
+        if (emailCadstrado) {
+            return res.status(200).json({"mensagem":"Email já cadastrado!"});
+        }
+        const usuario = await prisma.usuario.create({
+            data: {
+                nome,
+                email,
+                senha
+            } 
+        })
+        console.log(usuario);
+        return res.status(200).json({"mensagem":"Usuário cadastrado com sucesso!"});
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
-    usuarios
+    usuarios,
+    criarUsuario
 }
 
 
