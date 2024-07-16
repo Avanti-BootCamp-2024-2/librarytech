@@ -16,14 +16,10 @@ const usuarios = async (req, res) => {
     }
 }
 
-const criarUsuario= async (req, res) => {
+const criarUsuario = async (req, res) => {
     const {nome, email, senha } = req.body
 
     try {
-        const emailCadstrado = await prisma.usuario.findFirst({where: {email}});
-        if (emailCadstrado) {
-            return res.status(200).json({"mensagem":"Email já cadastrado!"});
-        }
         const usuario = await prisma.usuario.create({
             data: {
                 nome,
@@ -31,17 +27,61 @@ const criarUsuario= async (req, res) => {
                 senha
             } 
         })
-        console.log(usuario);
-        return res.status(200).json({"mensagem":"Usuário cadastrado com sucesso!"});
+        return res.status(201).json({"mensagem":"Usuário cadastrado com sucesso!"});
         
     } catch (error) {
-        console.log(error);
+        if (error.code === 'P2002') {
+            return res.status(409).json({ mensagem:"Email já cadastrado!: " + error.meta.target.join(', ') });
+          }
+        res.status(400).json({ mensagem: error.message });
     }
+}
+
+const editaUsuario = async (req, res) => {
+    const { nome, senha } = req.body
+
+    const { id } = req.params;
+
+    const idUser = parseInt(id);
+    if (isNaN(id)) {
+        return res.status(400).json({ mensagem: "ID do usuário invalido" });
+    }
+
+    const updateUser = await prisma.usuario.update({
+        where: {
+          id: idUser
+        },
+        data: {
+            nome,
+            senha
+        },
+      })
+      console.log(updateUser);
+    return res.status(201).json({ mensagem:"Usuário cadastrado com sucesso!" });
+
+}
+
+const removeUsuario = async (req, rep) => {
+    const { id } = req.params;
+
+    const idUser = parseInt(id);
+    if (isNaN(id)) {
+        return res.status(400).json({ mensagem: "ID do usuário invalido" });
+    }
+
+    const deleteUser = await prisma.user.delete({
+        where: {
+            id: idUser
+        },
+      })
+    return res.status(204).json({ mensagem:"Usuário removido com sucesso!" });
 }
 
 module.exports = {
     usuarios,
-    criarUsuario
+    criarUsuario,
+    editaUsuario,
+    removeUsuario
 }
 
 
