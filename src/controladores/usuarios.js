@@ -42,11 +42,11 @@ const editaUsuario = async (req, res) => {
 
     const { id } = req.params;
 
-    const idUser = parseInt(id);
+
     if (isNaN(id)) {
         return res.status(400).json({ mensagem: "ID do usuário invalido" });
     }
-
+    const idUser = parseInt(id);
     const updateUser = await prisma.usuario.update({
         where: {
           id: idUser
@@ -56,8 +56,7 @@ const editaUsuario = async (req, res) => {
             senha
         },
       })
-      console.log(updateUser);
-    return res.status(201).json({ mensagem:"Usuário cadastrado com sucesso!" });
+    return res.status(201).json({ mensagem:"Usuário atualizado com sucesso!" });
 
 }
 
