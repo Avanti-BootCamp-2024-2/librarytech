@@ -7,23 +7,23 @@ const trocas = async (req, resp) => {
 }
 
 const criarTroca = async (req, resp) => {
-    const { 
+    const {
         solicitanteId,
-        receptorId, 
-        livroSolicitadoId, 
-        livroOferecidoId, 
-        dataSolicitacao, 
-        dataConclusao, 
+        receptorId,
+        livroSolicitadoId,
+        livroOferecidoId,
+        dataSolicitacao,
+        dataConclusao,
         status } = req.body
-        const solicitante = parseInt(solicitanteId);
-        const receptor = parseInt(receptorId);
-        const livroSolicitado = parseInt(livroSolicitadoId);
-        const livroOferecido = parseInt(livroOferecidoId);
-        const data_solicitacao = new Date(dataSolicitacao);
-        const data_conclusao = new Date(dataConclusao);
+    const solicitante = parseInt(solicitanteId);
+    const receptor = parseInt(receptorId);
+    const livroSolicitado = parseInt(livroSolicitadoId);
+    const livroOferecido = parseInt(livroOferecidoId);
+    const data_solicitacao = new Date(dataSolicitacao);
+    const data_conclusao = new Date(dataConclusao);
+
 
     try {
-
         const troca = await prisma.troca.create({
             data: {
                 solicitante_id: solicitante,
@@ -48,13 +48,14 @@ const criarTroca = async (req, resp) => {
                 troca_id: troca.id,
             }
         })
+
         return resp.status(201).json(troca)
 
     } catch (error) {
         console.log(error.message);
         return resp.status(500).json(error.message)
     }
- }
+}
 
 const editaTroca = async (req, resp) => {
     const { titulo, autor, descricao } = req.body;
@@ -95,6 +96,7 @@ const removeTroca = async (req, resp) => {
     })
     return resp.status(204).json({ mensagem: "Troca removido com sucesso!" });
 }
+
 
 module.exports = {
     trocas,

@@ -1,6 +1,6 @@
 const express = require('express')
 const { usuarios, criarUsuario, editaUsuario, removeUsuario } = require('./controladores/usuarios')
-const { livros, criarLivro, editaLivro, removeLivro } = require('./controladores/livos')
+const { livros, criarLivro, editaLivro, removeLivro, concluirTrocaUsuarioLivro } = require('./controladores/livos')
 const { trocas, criarTroca } = require('./controladores/trocas')
 const router = express.Router()
 
@@ -21,7 +21,7 @@ router.delete('/livro/:id', removeLivro);
 
 router.get('/trocas', trocas)
 router.post('/troca', criarTroca);
-// router.put('/troca/:id', editaTroca);
+router.put('/troca', concluirTrocaUsuarioLivro);
 // router.delete('/troca/:id', removeTroca);
 
 module.exports = router

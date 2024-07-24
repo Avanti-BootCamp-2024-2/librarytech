@@ -70,9 +70,61 @@ const removeLivro = async (req, resp) => {
     return resp.status(204).json({ mensagem:"Livro removido com sucesso!" });
 }
 
+const concluirTrocaUsuarioLivro = async (req, resp) => {
+    const {
+        trocaId,
+        solicitanteId,
+        receptorId,
+        livroSolicitadoId,
+        livroOferecidoId,
+        dataConclusao,
+        status } = req.body
+
+    const solicitante = parseInt(solicitanteId);
+    const receptor = parseInt(receptorId);
+    const livroSolicitado = parseInt(livroSolicitadoId);
+    const livroOferecido = parseInt(livroOferecidoId);
+    const data_conclusao = new Date(dataConclusao);
+
+    try {
+       const livroUsuarioSolicitante = await prisma.livro.update({
+                where: { id: livroSolicitado }
+            },
+            { 
+                data: { usuario_id: solicitante } 
+            })
+    
+        const livroUsuarioReceptor = await prisma.livro.update(
+            {
+                where: { id: livroOferecido }
+            },
+            { data: { usuario_id: receptor } }
+        )
+    
+        const statusTroca = await prisma.troca.update({
+            where: {
+                id: trocaId
+            },
+            data: {
+                status,
+                data_conclusao
+    
+            }
+        })
+
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+    return resp.status(201).json({ mensagem:"Troca concluída com sucesso!" });
+
+
+}
+
 module.exports = {
     livros,
     criarLivro,
     editaLivro,
-    removeLivro
+    removeLivro,
+    concluirTrocaUsuarioLivro
 }
