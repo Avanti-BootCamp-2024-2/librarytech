@@ -72,47 +72,42 @@ const removeLivro = async (req, resp) => {
 
 const concluirTrocaUsuarioLivro = async (req, resp) => {
     const {
-        trocaId,
-        solicitanteId,
-        receptorId,
-        livroSolicitadoId,
-        livroOferecidoId,
-        dataConclusao,
-        status } = req.body
+        troca_id,
+        solicitante_id,
+        receptor_id,
+        livro_solicitado_id,
+        livro_oferecido_id,
+        data_conclusao,
+        status} = req.body
 
-    const solicitante = parseInt(solicitanteId);
-    const receptor = parseInt(receptorId);
-    const livroSolicitado = parseInt(livroSolicitadoId);
-    const livroOferecido = parseInt(livroOferecidoId);
-    const data_conclusao = new Date(dataConclusao);
+    const trocaId = parseInt(troca_id);
+    const solicitanteId = parseInt(solicitante_id);
+    const receptorId = parseInt(receptor_id);
+    const livroSolicitado = parseInt(livro_solicitado_id);
+    const livroOferecido = parseInt(livro_oferecido_id);
+    const dataConclusao = new Date(data_conclusao);
 
     try {
-       const livroUsuarioSolicitante = await prisma.livro.update({
-                where: { id: livroSolicitado }
-            },
-            { 
-                data: { usuario_id: solicitante } 
+       await prisma.livro.update({
+                where: { id: livroSolicitado },
+                data: { usuario_id: solicitanteId }
             })
     
-        const livroUsuarioReceptor = await prisma.livro.update(
-            {
-                where: { id: livroOferecido }
-            },
-            { data: { usuario_id: receptor } }
-        )
+        await prisma.livro.update({
+                where: { id: livroOferecido },
+                data: { usuario_id: receptorId } 
+            })
     
-        const statusTroca = await prisma.troca.update({
+        await prisma.troca.update({
             where: {
                 id: trocaId
             },
             data: {
-                status,
-                data_conclusao
-    
+                status: status,
+                data_conclusao: dataConclusao
             }
         })
 
-        
     } catch (error) {
         console.log(error.message);
     }
