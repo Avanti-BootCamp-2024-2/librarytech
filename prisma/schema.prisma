@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Avaliacao {
+  id                                      Int      @id(map: "avaliacoes_pkey") @default(autoincrement())
+  troca_id                                Int?
+  avaliador_id                            Int?
+  avaliado_id                             Int?
+  nota                                    Int
+  comentario                              String?
+  data_avaliacao                          DateTime @db.Date
+  usuario_avaliacao_avaliado_idTousuario  Usuario? @relation("avaliacao_avaliado_idTousuario", fields: [avaliado_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "avaliacoes_avaliado_id_fkey")
+  usuario_avaliacao_avaliador_idTousuario Usuario? @relation("avaliacao_avaliador_idTousuario", fields: [avaliador_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "avaliacoes_avaliador_id_fkey")
+  troca                                   Troca?   @relation(fields: [troca_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "avaliacoes_troca_id_fkey")
+  @@map("avaliaceos")
+}
+
+model HistoricoTroca {
+  id         Int      @id(map: "historico_trocas_pkey") @default(autoincrement())
+  usuario_id Int?
+  troca_id   Int?
+  troca      Troca?   @relation(fields: [troca_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "historico_trocas_troca_id_fkey")
+  usuario    Usuario? @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "historico_trocas_usuario_id_fkey")
+  @@map("hitorico_trocas")
+}
+
+model Livro {
+  id                                     Int      @id(map: "livros_pkey") @default(autoincrement())
+  titulo                                 String   @db.VarChar(255)
+  autor                                  String   @db.VarChar(255)
+  descricao                              String?
+  usuario_id                             Int?
+  usuario                                Usuario? @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "livros_usuario_id_fkey")
+  troca_troca_livro_oferecido_idTolivro  Troca[]  @relation("troca_livro_oferecido_idTolivro")
+  troca_troca_livro_solicitado_idTolivro Troca[]  @relation("troca_livro_solicitado_idTolivro")
+  @@map("livros")
+}
+
+model Mensagem {
+  id                                        Int      @id(map: "mensagens_pkey") @default(autoincrement())
+  troca_id                                  Int?
+  remetente_id                              Int?
+  destinatario_id                           Int?
+  conteudo                                  String
+  data_envio                                DateTime @db.Date
+  usuario_mensagem_destinatario_idTousuario Usuario? @relation("mensagem_destinatario_idTousuario", fields: [destinatario_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mensagens_destinatario_id_fkey")
+  usuario_mensagem_remetente_idTousuario    Usuario? @relation("mensagem_remetente_idTousuario", fields: [remetente_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mensagens_remetente_id_fkey")
+  troca                                     Troca?   @relation(fields: [troca_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mensagens_troca_id_fkey")
+  @@map("mensagens")
+}
+
+model Troca {
+  id                                     Int               @id(map: "trocas_pkey") @default(autoincrement())
+  solicitante_id                         Int?
+  receptor_id                            Int?
+  livro_solicitado_id                    Int?
+  livro_oferecido_id                     Int?
+  data_solicitacao                       DateTime          @db.Date
+  data_conclusao                         DateTime?         @db.Date
+  status                                 String            @db.VarChar(50)
+  avaliacao                              Avaliacao[]
+  historico_troca                        HistoricoTroca[]
+  mensagem                               Mensagem[]
+  livro_troca_livro_oferecido_idTolivro  Livro?            @relation("troca_livro_oferecido_idTolivro", fields: [livro_oferecido_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "trocas_livro_oferecido_id_fkey")
+  livro_troca_livro_solicitado_idTolivro Livro?            @relation("troca_livro_solicitado_idTolivro", fields: [livro_solicitado_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "trocas_livro_solicitado_id_fkey")
+  usuario_troca_receptor_idTousuario     Usuario?          @relation("troca_receptor_idTousuario", fields: [receptor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "trocas_receptor_id_fkey")
+  usuario_troca_solicitante_idTousuario  Usuario?          @relation("troca_solicitante_idTousuario", fields: [solicitante_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "trocas_solicitante_id_fkey")
+  @@map("trocas")
+}
+
+model Usuario {
+  id                                         Int               @id(map: "usuarios_pkey") @default(autoincrement())
+  nome                                       String            @db.VarChar(255)
+  email                                      String            @unique(map: "usuarios_email_key") @db.VarChar(255)
+  senha                                      String            @db.VarChar(255)
+  reputacao                                  Int?              @default(0)
+  avaliacao_avaliacao_avaliado_idTousuario   Avaliacao[]       @relation("avaliacao_avaliado_idTousuario")
+  avaliacao_avaliacao_avaliador_idTousuario  Avaliacao[]       @relation("avaliacao_avaliador_idTousuario")
+  historico_troca                            HistoricoTroca[]
+  livro                                      Livro[]
+  mensagem_mensagem_destinatario_idTousuario Mensagem[]        @relation("mensagem_destinatario_idTousuario")
+  mensagem_mensagem_remetente_idTousuario    Mensagem[]        @relation("mensagem_remetente_idTousuario")
+  troca_troca_receptor_idTousuario           Troca[]           @relation("troca_receptor_idTousuario")
+  troca_troca_solicitante_idTousuario        Troca[]           @relation("troca_solicitante_idTousuario")
+  @@map("usuarios")
+}
