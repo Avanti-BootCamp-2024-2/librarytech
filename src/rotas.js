@@ -3,6 +3,7 @@ const { usuarios, criarUsuario, editaUsuario, removeUsuario } = require('./contr
 const { livros, criarLivro, editaLivro, removeLivro, concluirTrocaUsuarioLivro } = require('./controladores/livos')
 const { trocas, criarTroca } = require('./controladores/trocas')
 const { mensagens, criarMensagem, mensagemDestinatario } = require('./controladores/mensagem')
+const { listaPost, criaPost } = require('./controladores/post')
 
 const router = express.Router()
 
@@ -28,9 +29,10 @@ router.put('/troca', concluirTrocaUsuarioLivro);
 
 router.get('/mensagem', mensagens)
 router.get('/mensagem/:id', mensagemDestinatario)
-
 router.post('/mensagem', criarMensagem);
 
+router.get('/posts/:id', listaPost)
+router.post('/post', criaPost);
 
 module.exports = router
 
