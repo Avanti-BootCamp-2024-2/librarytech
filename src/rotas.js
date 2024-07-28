@@ -4,6 +4,7 @@ const { livros, criarLivro, editaLivro, removeLivro, concluirTrocaUsuarioLivro }
 const { trocas, criarTroca } = require('./controladores/trocas')
 const { mensagens, criarMensagem, mensagemDestinatario } = require('./controladores/mensagem')
 const { listaPost, criaPost } = require('./controladores/post')
+const { login } = require('./controladores/login')
 
 const router = express.Router()
 
@@ -11,6 +12,7 @@ const router = express.Router()
 router.get('/', (req, res) => {
     res.send('Homepage de pássaros')
 })
+router.post('/login', login)
 
 router.get('/usuarios', usuarios)
 router.post('/usuario', criarUsuario);

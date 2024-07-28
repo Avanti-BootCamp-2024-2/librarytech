@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const { encriptarSenha } = require('../servicos/crypts');
 const prisma = new PrismaClient();
 
 const usuarios = async (req, res) => {
@@ -18,13 +19,13 @@ const usuarios = async (req, res) => {
 
 const criarUsuario = async (req, res) => {
     const {nome, email, senha } = req.body
-
+    senhaEncriptada = encriptarSenha(senha)
     try {
         const usuario = await prisma.usuario.create({
             data: {
                 nome,
                 email,
-                senha
+                senha: senhaEncriptada
             } 
         })
         return res.status(201).json({"mensagem":"Usuário cadastrado com sucesso!"});
