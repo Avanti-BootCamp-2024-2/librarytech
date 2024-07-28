@@ -5,6 +5,7 @@ const { trocas, criarTroca } = require('./controladores/trocas')
 const { mensagens, criarMensagem, mensagemDestinatario } = require('./controladores/mensagem')
 const { listaPost, criaPost } = require('./controladores/post')
 const { login } = require('./controladores/login')
+const verificaUsuarioLogado = require('./intermediarios/autenticacao')
 
 const router = express.Router()
 
@@ -14,7 +15,7 @@ router.get('/', (req, res) => {
 })
 router.post('/login', login)
 
-router.get('/usuarios', usuarios)
+router.get('/usuarios', verificaUsuarioLogado, usuarios)
 router.post('/usuario', criarUsuario);
 router.put('/usuario/:id', editaUsuario);
 router.delete('/usuario/:id', removeUsuario);

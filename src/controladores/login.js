@@ -1,5 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 const { dencryptSenha } = require('../servicos/crypts');
+const senhaJWT = require('../senhaJWT');
+
 const prisma = new PrismaClient();
 
 const login = async (req, resp) => {
@@ -25,7 +28,10 @@ const login = async (req, resp) => {
         if (!isValid) {
             return resp.status(401).json({ mensagem:"Não autorizado!" });
         }
-        return resp.status(200).json({ mensagem:"Logado!" });
+        const token = jwt.sign({id: usuario.id}, senhaJWT, {expiresIn: '10d'});
+        const {senha: _, ...usuarioLogado} = usuario
+
+        return resp.status(200).json({ usuario: usuarioLogado, token });
 
     } catch (error) {
         return resp.status(500).json(error.message)
