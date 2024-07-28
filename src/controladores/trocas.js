@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const historicoTroca = require('../servicos/historicoTroca');
 const prisma = new PrismaClient();
 
 const trocas = async (req, resp) => {
@@ -7,21 +8,18 @@ const trocas = async (req, resp) => {
 }
 
 const criarTroca = async (req, resp) => {
+    //TODO: Verificar se o livro pertence aos usuarios envolvido na troca
     const {
         solicitanteId,
         receptorId,
         livroSolicitadoId,
         livroOferecidoId,
-        dataSolicitacao,
-        dataConclusao,
         status } = req.body
     const solicitante = parseInt(solicitanteId);
     const receptor = parseInt(receptorId);
     const livroSolicitado = parseInt(livroSolicitadoId);
     const livroOferecido = parseInt(livroOferecidoId);
-    const data_solicitacao = new Date(dataSolicitacao);
-    const data_conclusao = new Date(dataConclusao);
-
+    const data_solicitacao = new Date();
 
     try {
         const troca = await prisma.troca.create({
@@ -31,23 +29,19 @@ const criarTroca = async (req, resp) => {
                 livro_solicitado_id: livroSolicitado,
                 livro_oferecido_id: livroOferecido,
                 data_solicitacao,
-                data_conclusao,
                 status
+            },
+            where: {
+                solicitante_id: true,
+                receptor_id: true,
+                livro_solicitado_id: true,
+                livro_oferecido_id: true,
+                data_solicitacao: true,
+                status: true
             }
         })
-        // TODO - Criar uma função para os historicos e troca os proprietarios dos livros na tabela livros
-        const historicoTrocaSolicitante = await prisma.historicoTroca.create({
-            data: {
-                usuario_id: troca.solicitante_id,
-                troca_id: troca.id,
-            }
-        })
-        const historicoTrocaReceptor = await prisma.historicoTroca.create({
-            data: {
-                usuario_id: troca.receptor_id,
-                troca_id: troca.id,
-            }
-        })
+
+        historicoTroca(troca)
 
         return resp.status(201).json(troca)
 
