@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
-const { encriptarSenha } = require('../servicos/crypts');
+const { encryptSenha } = require('../servicos/crypts');
+const usuario = require('../validacoes/usuario');
 const prisma = new PrismaClient();
 
 const usuarios = async (req, res) => {
@@ -19,16 +20,31 @@ const usuarios = async (req, res) => {
 
 const criarUsuario = async (req, res) => {
     const {nome, email, senha } = req.body
-    senhaEncriptada = encriptarSenha(senha)
+
+    const { error } = usuario.validate({nome, email, senha});
+
+    if (error) {
+        return res.status(400).json({"Erro de validação:": error.details});
+    } 
+
+
     try {
-        const usuario = await prisma.usuario.create({
+        const usuario = prisma.usuario.findUnique({
+            where:email
+        })
+        if (usuario.email) {
+            return res.status(201).json({ mensagem :"Email já cadastrado!"}); 
+        }
+
+         senhaEncriptada =  await encryptSenha(senha)
+         usuario = await prisma.usuario.create({
             data: {
                 nome,
                 email,
                 senha: senhaEncriptada
             } 
         })
-        return res.status(201).json({"mensagem":"Usuário cadastrado com sucesso!"});
+        return res.status(201).json({ mensagem :"Usuário cadastrado com sucesso!"});
         
     } catch (error) {
         if (error.code === 'P2002') {
