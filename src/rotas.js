@@ -9,33 +9,31 @@ const verificaUsuarioLogado = require('./intermediarios/autenticacao')
 
 const router = express.Router()
 
-// define a rota da homepage
 router.get('/', (req, res) => {
-    res.send('Homepage de pássaros')
+    res.send('Troca de Livros')
 })
 router.post('/login', login)
 
 router.get('/usuarios', verificaUsuarioLogado, usuarios)
 router.post('/usuario', criarUsuario);
-router.put('/usuario/:id', editaUsuario);
-router.delete('/usuario/:id', removeUsuario);
+router.put('/usuario/:id', verificaUsuarioLogado, editaUsuario);
+router.delete('/usuario/:id',verificaUsuarioLogado, removeUsuario);
 
 router.get('/livros', livros)
-router.post('/livro', criarLivro);
-router.put('/livro/:id', editaLivro);
-router.delete('/livro/:id', removeLivro);
+router.post('/livro', verificaUsuarioLogado, criarLivro);
+router.put('/livro/:id', verificaUsuarioLogado, editaLivro);
+router.delete('/livro/:id', verificaUsuarioLogado, removeLivro);
 
-router.get('/trocas', trocas)
-router.post('/troca', criarTroca);
-router.put('/troca', concluirTrocaUsuarioLivro);
-// router.delete('/troca/:id', removeTroca);
+router.get('/trocas', verificaUsuarioLogado, trocas)
+router.post('/troca', verificaUsuarioLogado, criarTroca);
+router.put('/troca', verificaUsuarioLogado, concluirTrocaUsuarioLivro);
 
-router.get('/mensagem', mensagens)
-router.get('/mensagem/:id', mensagemDestinatario)
-router.post('/mensagem', criarMensagem);
+router.get('/mensagem', verificaUsuarioLogado, mensagens)
+router.get('/mensagem/:id', verificaUsuarioLogado, mensagemDestinatario)
+router.post('/mensagem', verificaUsuarioLogado, criarMensagem);
 
-router.get('/posts/:id', listaPost)
-router.post('/post', criaPost);
+router.get('/posts/:id', verificaUsuarioLogado, listaPost)
+router.post('/post', verificaUsuarioLogado, criaPost);
 
 module.exports = router
 
