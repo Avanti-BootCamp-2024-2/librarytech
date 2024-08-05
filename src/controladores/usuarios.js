@@ -27,7 +27,6 @@ const criarUsuario = async (req, res) => {
         return res.status(400).json({"Erro de validação:": error.details});
     } 
 
-
     try {
         const usuario = prisma.usuario.findUnique({
             where:email
@@ -37,7 +36,7 @@ const criarUsuario = async (req, res) => {
         }
 
          senhaEncriptada =  await encryptSenha(senha)
-         usuario = await prisma.usuario.create({
+         const usuarioCadastrado = await prisma.usuario.create({
             data: {
                 nome,
                 email,
@@ -50,30 +49,33 @@ const criarUsuario = async (req, res) => {
         if (error.code === 'P2002') {
             return res.status(409).json({ mensagem:"Email já cadastrado!: " + error.meta.target.join(', ') });
           }
-        res.status(400).json({ mensagem: error.message });
+        res.status(500).json({ mensagem: error.message });
     }
 }
 
 const editaUsuario = async (req, res) => {
     const { nome, senha } = req.body
-
     const { id } = req.params;
-
 
     if (isNaN(id)) {
         return res.status(400).json({ mensagem: "ID do usuário invalido" });
     }
-    const idUser = parseInt(id);
-    const updateUser = await prisma.usuario.update({
-        where: {
-          id: idUser
-        },
-        data: {
-            nome,
-            senha
-        },
-      })
-    return res.status(201).json({ mensagem:"Usuário atualizado com sucesso!" });
+    try {
+        const idUser = parseInt(id);
+        const updateUser = await prisma.usuario.update({
+            where: {
+              id: idUser
+            },
+            data: {
+                nome,
+                senha
+            },
+          })
+        return res.status(201).json({ mensagem:"Usuário atualizado com sucesso!" });
+        
+    } catch (error) {
+        res.status(500).json({ mensagem: error.message });
+    }
 
 }
 
@@ -84,13 +86,17 @@ const removeUsuario = async (req, rep) => {
     if (isNaN(id)) {
         return res.status(400).json({ mensagem: "ID do usuário invalido" });
     }
-
-    const deleteUser = await prisma.user.delete({
-        where: {
-            id: idUser
-        },
-      })
-    return res.status(204).json({ mensagem:"Usuário removido com sucesso!" });
+    try {
+        const deleteUser = await prisma.user.delete({
+            where: {
+                id: idUser
+            },
+          })
+        return res.status(204).json({ mensagem:"Usuário removido com sucesso!" });
+        
+    } catch (error) {
+        res.status(500).json({ mensagem: error.message });
+    }
 }
 
 module.exports = {
